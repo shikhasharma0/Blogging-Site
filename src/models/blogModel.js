@@ -20,8 +20,8 @@ const blogSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
-    "authorid": {
-        type: objectId, 
+    "authorId": {
+        type: objectId,
         ref: "author"
     },
     "tags": [String],
@@ -29,24 +29,17 @@ const blogSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    "subcategory": [String],
-    "IsPublished": {
+    "subCategory": [String],
+    "isPublished": {
         type: Boolean,
         default: false
     },
     "publishedAt": Date,
-    "Isdeleted": {
-        type: Boolean,
-        default: false
-    },
-   "deletedAt": Date,
+    "deletedAt": String,
     "isDeleted": {
         type: Boolean,
         default: false,
     },
-
-
-
-}, { timestamps: true })
+},{ timestamps: true })
 
 module.exports = mongoose.model("blog", blogSchema)

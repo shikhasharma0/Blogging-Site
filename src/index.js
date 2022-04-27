@@ -15,7 +15,7 @@ mongoose.connect("mongodb+srv://Project-1-Group:CaBrSNjCFD2YQuqc@cluster0.w5bka.
 
 app.use("/", route)
 
-app.listen(process.env.PORT || 5000, (err)=> {
-    console.log("Connected to PORT 5000")
+app.listen(process.env.PORT || 3000, (err)=> {
+    console.log("Connected to PORT 3000")
 })
 
