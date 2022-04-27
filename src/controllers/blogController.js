@@ -107,7 +107,7 @@ const updateBlog = async function(req,res)
         }
         data['publishedAt']=moment().format('DD-MM-YYYY');
         let blog = await Bloger.findOneAndUpdate({_id : req.params.blogId,isDeleted : false},{$set : data},{new : true});
-        if(Object.keys(blog).length!=0)
+        if(blog!=null)
         {
             delete blog.deletedAt;
             if(blog.isPublished==false)
