@@ -35,7 +35,7 @@ const blogSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    "publishedAt": { type : String, default : moment().format('DD-MM-YYYY') },
+    "publishedAt": String,
     "deletedAt": String,
     "isDeleted": {
         type: Boolean,

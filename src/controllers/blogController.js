@@ -1,6 +1,8 @@
 const Bloger = require('../models/blogModel');
 const Author = require('../models/authorModel');
+const Validators = require('../validators/validator')
 const moment = require('moment');
+const { all } = require('express/lib/application');
 
 const getBlogs = async function (req, res) 
 {
@@ -24,9 +26,14 @@ const getBlogs = async function (req, res)
             filter['subCategory']=req.query.subcategory;
         }
         filter['isDeleted']=false;
-        console.log(filter);
         let blogs=await Bloger.find(filter);
         if (blogs.length > 0) {
+            for(let i=0;i<blogs.length;++i)
+            {
+                delete blogs[i].deletedAt;
+                if(blogs[i].isPublished==false)
+                delete blogs[i].publishedAt;
+            }
             res.status(200).send({ status: true, data: blogs });
         } 
         else {
@@ -45,40 +52,40 @@ const createBlogs = async function (req, res)
     {
       const requestBody = req.body;
   
-    //   if (!isValid(requestBody)) {
-    //     res.status(400).send({ status: false, message: 'Invalid request parameters. Please provide blog details' })
-    //     return
-    //   }
-    //   if (!isValid(requestBody.title)) {
-    //     res.status(400).send({ status: false, message: 'Blog Title is required' })
-    //     return
-    //   }
+      if (!Validators.isValidRequestBody(requestBody)) {
+        res.status(400).send({ status: false, message: 'Invalid request parameters. Please provide blog details' })
+        return
+      }
+      if (!Validators.isValid(requestBody.title)) {
+        res.status(400).send({ status: false, message: 'Blog Title is required' })
+        return
+      }
   
-    //   if (!isValid(requestBody.body)) {
-    //     res.status(400).send({ status: false, message: 'Blog body is required' })
-    //     return
-    //   }
+      if (!Validators.isValid(requestBody.body)) {
+        res.status(400).send({ status: false, message: 'Blog body is required' })
+        return
+      }
   
-    //   if (!isValid(requestBody.authorId)) {
-    //     res.status(400).send({ status: false, message: 'Author id is required' })
-    //     return
-    //   }
+      if (!Validators.isValid(requestBody.authorId)) {
+        res.status(400).send({ status: false, message: 'Author id is required' })
+        return
+      }
   
-    //   if (!isValid(requestBody.category)) {
-    //     return res.status(400).send({ status: false, message: 'Blog category is required' })
-    //   }
+      if (!Validators.isValid(requestBody.category)) {
+        return res.status(400).send({ status: false, message: 'Blog category is required' })
+      }
   
-    //   if (!(requestBody.authorId === requestBody.tokenId)) {
-    //     return res.status(400).send({ status: false, msg: "unauthorized access" })
-    //   }
+      if (!(requestBody.authorId === requestBody.tokenId)) {
+        return res.status(400).send({ status: false, msg: "unauthorized access" })
+      }
   
       let author = await Author.findOne({_id : requestBody.authorId});
       if (!author) {
         return res.status(400).send({ status: false, message: "Author_Id not found" });
       }
   
-      requestBody.isPublished = requestBody.isPublished ? requestBody.isPublished : false;
-      requestBody.publishedAt = requestBody.isPublished ? new Date() : null;
+      //requestBody.isPublished = requestBody.isPublished ? requestBody.isPublished : false;
+      requestBody.publishedAt = requestBody.isPublished ? moment().format('DD-MM-YYYY') : null;
   
       let createdBlog = await Bloger.create(requestBody);
       res.status(201).send({ status: true, message: 'New blog created successfully', data: createdBlog });
@@ -102,7 +109,9 @@ const updateBlog = async function(req,res)
         let blog = await Bloger.findOneAndUpdate({_id : req.params.blogId,isDeleted : false},{$set : data},{new : true});
         if(Object.keys(blog).length!=0)
         {
-            
+            delete blog.deletedAt;
+            if(blog.isPublished==false)
+            delete blog.publishedAt;
             res.status(200).send({status : true,data : blog});
         }
         else
@@ -125,7 +134,7 @@ const deleteBlogById = async function(req,res)
         
             res.status(400).send({status : false,msg : "Bad request!"});
 
-        let blog = await Bloger.findOneAndUpdate({_id : req.params.blogId,isDeleted : false},{isDeleted : true});
+        let blog = await Bloger.findOneAndUpdate({_id : req.params.blogId,isDeleted : false},{isDeleted : true,deletedAt : moment().format('DD-MM-YYYY')});
         if(blog!=null)
         {
             res.status(200).send({status : true,msg : "Blog deleted successfully!"});
@@ -166,7 +175,7 @@ const deleteBlog = async function(req,res)
         {
             filter['isPublished']=false;
         }
-        let blog = await Bloger.updateMany(filter,{$set : {isDeleted : true}});
+        let blog = await Bloger.updateMany(filter,{$set : {isDeleted : true,deletedAt : moment().format('DD-MM-YYYY')}});
         if(Object.keys(blog).length!=0)
         {
             res.status(200).send({status : true,msg : "Blog deleted successfully!"});
