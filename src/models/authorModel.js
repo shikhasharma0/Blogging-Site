@@ -23,8 +23,8 @@ const authorSchema = mongoose.Schema({
 //},
  //{ timestamps: true })
 
-const author = mongoose.model('Author', authorSchema) //authors
+module.exports = mongoose.model('Author', authorSchema) //authors
 //const blog = mongoose.model('Blog', blogSchema) //blogs
 
-module.exports = {author}
+// module.exports = {author}
 

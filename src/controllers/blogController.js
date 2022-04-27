@@ -1,70 +1,108 @@
 const Bloger = require('../models/blogModel');
 const Author = require('../models/authorModel');
+const moment = require('moment');
 
+const getBlogs = async function (req, res) 
+{
+    try 
+    {
+        let filter={};
+        if(req.query.category!=undefined)
+        {
+            filter['category']=req.query.category;
+        }
+        if(req.query.authorId!=undefined)
+        {
+            filter['authorId']=req.query.authorId;
+        }
+        if(req.query.tags!=undefined)
+        {
+            filter['tags']=req.query.tags;
+        }
+        if (req.query.subcategory!=undefined)
+        {
+            filter['subCategory']=req.query.subcategory;
+        }
+        filter['isDeleted']=false;
+        console.log(filter);
+        let blogs=await Bloger.find(filter);
+        if (blogs.length > 0) {
+            res.status(200).send({ status: true, data: blogs });
+        } 
+        else {
+            res.status(404).send({ status: false, message: 'No blogs found!' })
+        }
+    } 
+    catch (error) 
+    {
+        res.status(400).send({ status: false, error: error.message });
+    }
+};
 
-// const Blogdata = async function (req, res) {
-   
-//     let blog = req.body.authorid
-//     let BlogerrCreated = await Bloger .create(blog)
-//     res.send({data: BlogerrCreated })
-// }
-
-// / --------------------------- fourth api to get blog by query without query get all blogs --------------------------------------------------------------------------//
-
-const getBlogs = async function (req, res) {
-    try {
-      let blogs=await Bloger.find();
-      if (blogs.length > 0) {
-        res.status(200).send({ status: true, data: blogs });
-      } else {
-        res.status(404).send({ status: false, message: 'No blogs found of thia author' })
+const createBlogs = async function (req, res) 
+{
+    try 
+    {
+      const requestBody = req.body;
+  
+    //   if (!isValid(requestBody)) {
+    //     res.status(400).send({ status: false, message: 'Invalid request parameters. Please provide blog details' })
+    //     return
+    //   }
+    //   if (!isValid(requestBody.title)) {
+    //     res.status(400).send({ status: false, message: 'Blog Title is required' })
+    //     return
+    //   }
+  
+    //   if (!isValid(requestBody.body)) {
+    //     res.status(400).send({ status: false, message: 'Blog body is required' })
+    //     return
+    //   }
+  
+    //   if (!isValid(requestBody.authorId)) {
+    //     res.status(400).send({ status: false, message: 'Author id is required' })
+    //     return
+    //   }
+  
+    //   if (!isValid(requestBody.category)) {
+    //     return res.status(400).send({ status: false, message: 'Blog category is required' })
+    //   }
+  
+    //   if (!(requestBody.authorId === requestBody.tokenId)) {
+    //     return res.status(400).send({ status: false, msg: "unauthorized access" })
+    //   }
+  
+      let author = await Author.findOne({_id : requestBody.authorId});
+      if (!author) {
+        return res.status(400).send({ status: false, message: "Author_Id not found" });
       }
   
-    } catch (error) {
-      res.status(400).send({ status: false, error: error.message });
+      requestBody.isPublished = requestBody.isPublished ? requestBody.isPublished : false;
+      requestBody.publishedAt = requestBody.isPublished ? new Date() : null;
+  
+      let createdBlog = await Bloger.create(requestBody);
+      res.status(201).send({ status: true, message: 'New blog created successfully', data: createdBlog });
+    } 
+    catch (error) 
+    {
+      res.status(500).send({ status: false, msg: error.message });
     }
-  }
-
- let PostBlogdata = async function (req, res){
-    try {
-             
-            let blog = req.body
-            let authorId = blog.authorid
-            let BlogerrCreated = await Bloger .create(blog)
-            res.send({data: BlogerrCreated })
-    
-        
-        if (!authorId) { return res.status(400).send("authorid required") }
-        let author = await authorModel.findById(authorId)
-        if (!author) { return res.status(400).send("invalid authorId") }
-
-
-        // let blogCreated = await blogModel.create(blog)
-        // if (!blogCreated) return res.status(400).send('invalid request')
-        // res.status(201).send({ data: blogCreated })
-        // const createBlogs = async function (req, res) {
-        //     try {
-        //       const requestBody = req.body;
-          
-        //       if (!isValidRequestBody(requestBody)) {
-        //         res.status(400).send({ status: false, message: 'Invalid request parameters. Please provide blog details' })
-        //         return
-          
-
-    }catch (err) {
-        console.log(err)
-        res.status(500).send({ msg: err.message })
-    }
-}
+};
 
 const updateBlog = async function(req,res)
 {
     try
     {
         let data = req.body;
+        if(data.isPublished==undefined)
+        {
+            data['isPublished']=true;
+        }
+        data['publishedAt']=moment().format('DD-MM-YYYY');
         let blog = await Bloger.findOneAndUpdate({_id : req.params.blogId,isDeleted : false},{$set : data},{new : true});
         if(Object.keys(blog).length!=0)
         {
+            
             res.status(200).send({status : true,data : blog});
         }
         else
@@ -83,9 +121,12 @@ const deleteBlogById = async function(req,res)
 {
     try
     {
-        let id = req.params.blogId;
-        let blog = await Bloger.findOneAndUpdate({_id : id,isDeleted : false},{isDeleted : true});
-        if(Object.keys(blog).length!=0)
+        if(req.params.blogId==undefined)
+        
+            res.status(400).send({status : false,msg : "Bad request!"});
+
+        let blog = await Bloger.findOneAndUpdate({_id : req.params.blogId,isDeleted : false},{isDeleted : true});
+        if(blog!=null)
         {
             res.status(200).send({status : true,msg : "Blog deleted successfully!"});
         }
@@ -109,17 +150,17 @@ const deleteBlog = async function(req,res)
         {
             filter['category']=req.query.category;
         }
-        if(req.query.authorid!=undefined)
+        if(req.query.authorId!=undefined)
         {
-            filter['authorId']=req.query.authorid;
+            filter['authorId']=req.query.authorId;
         }
-        if(req.query.tag!=undefined)
+        if(req.query.tags!=undefined)
         {
-            filter['tags']=req.query.tag;
+            filter['tags']=req.query.tags;
         }
-        if (req.query.subcategory!=undefined)
+        if (req.query.subCategory!=undefined)
         {
-            filter['subCategory']=req.query.subcategory;
+            filter['subCategory']=req.query.subCategory;
         }
         if(req.query.unpublished!=undefined)
         {
@@ -142,4 +183,4 @@ const deleteBlog = async function(req,res)
     }
 };
 
-module.exports={deleteBlogById,deleteBlog,updateBlog,getBlogs,PostBlogdata};
+module.exports={deleteBlogById,deleteBlog,updateBlog,getBlogs,createBlogs};

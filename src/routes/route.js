@@ -5,7 +5,7 @@ const BlogController = require("../controllers/blogController")
 
 //Author-Blog route Handlers
 router.post("/author", AuthorController.createAuthor)
-router.post("/blogs", BlogController.PostBlogdata)
+router.post("/blogs", BlogController.createBlogs)
 router.get("/blogs", BlogController.getBlogs)
 router.put("/blogs/:blogId", BlogController.updateBlog)
 router.delete("/blogs/:blogId", BlogController.deleteBlogById)

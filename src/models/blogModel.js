@@ -1,5 +1,6 @@
 const mongoose = require("mongoose")
 const objectId = mongoose.Schema.Types.ObjectId
+const moment = require('moment');
 const blogSchema = new mongoose.Schema({
 
     
@@ -34,7 +35,7 @@ const blogSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    "publishedAt": Date,
+    "publishedAt": { type : String, default : moment().format('DD-MM-YYYY') },
     "deletedAt": String,
     "isDeleted": {
         type: Boolean,
