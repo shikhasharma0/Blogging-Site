@@ -19,15 +19,17 @@ const getBlogs = async function (req, res)
         }
         if(req.query.tags!=undefined)
         {
-            filter['tags']=req.query.tags;
+            let tags=JSON.parse(req.query.tags)
+            filter['tags']=tags;
         }
         if (req.query.subcategory!=undefined)
         {
             filter['subCategory']=req.query.subcategory;
         }
         filter['isDeleted']=false;
+        filter['isPublished']=true;
         let blogs=await Bloger.find(filter);
-        if (blogs.length > 0) {
+        if (blogs.length!=0) {
             for(let i=0;i<blogs.length;++i)
             {
                 delete blogs[i].deletedAt;
@@ -101,10 +103,7 @@ const updateBlog = async function(req,res)
     try
     {
         let data = req.body;
-        if(data.isPublished==undefined)
-        {
-            data['isPublished']=true;
-        }
+        data['isPublished']=true;
         data['publishedAt']=moment().format('DD-MM-YYYY');
         let blog = await Bloger.findOneAndUpdate({_id : req.params.blogId,isDeleted : false},{$set : data},{new : true});
         if(blog!=null)
@@ -176,7 +175,6 @@ const deleteBlog = async function(req,res)
             filter['isPublished']=false;
         }
         let blog = await Bloger.updateMany(filter,{$set : {isDeleted : true,deletedAt : moment().format('DD-MM-YYYY')}});
-        console.log(blog);
         if(blog.modifiedCount!=0)
         {
             res.status(200).send({status : true,msg : "Blog deleted successfully!"});
