@@ -75,9 +75,9 @@ const createBlogs = async function (req, res)
         return res.status(400).send({ status: false, message: 'Blog category is required' })
       }
   
-      if (!(requestBody.authorId === requestBody.tokenId)) {
-        return res.status(400).send({ status: false, msg: "unauthorized access" })
-      }
+    //   if (!(requestBody.authorId === requestBody.tokenId)) {
+    //     return res.status(400).send({ status: false, msg: "unauthorized access" })
+    //   }
   
       let author = await Author.findOne({_id : requestBody.authorId});
       if (!author) {

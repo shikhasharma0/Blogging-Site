@@ -32,11 +32,12 @@ const createAuthor = async function(req,res)
             return
         }
         if (!Validators.isValid(requestBody.password)) {
-            res.status(400).send({ status: false, message: 'Title is required' })
+            res.status(400).send({ status: false, message: 'Password is required' })
             return
         }
         if (!(validator.isEmail(requestBody.email))) {
-            return res.status(400).send({ status: false, msg: 'enter valid email' })
+            res.status(400).send({ status: false, msg: 'enter valid email' })
+            return
         }
         let data = req.body
         let created = await author.create(data)
