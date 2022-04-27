@@ -176,7 +176,8 @@ const deleteBlog = async function(req,res)
             filter['isPublished']=false;
         }
         let blog = await Bloger.updateMany(filter,{$set : {isDeleted : true,deletedAt : moment().format('DD-MM-YYYY')}});
-        if(Object.keys(blog).length!=0)
+        console.log(blog);
+        if(blog.modifiedCount!=0)
         {
             res.status(200).send({status : true,msg : "Blog deleted successfully!"});
         }
