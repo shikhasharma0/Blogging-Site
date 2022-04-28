@@ -165,7 +165,14 @@ const deleteBlog = async function(req,res)
         }
         if(req.query.authorId!=undefined)
         {
+            let token=jwt.verify(req.header['x-api-token'],'projectOne');
+            if(token._id!=authorId)res.status(403).send({status : false,msg : 'Unauthorised Access!'});
             filter['authorId']=req.query.authorId;
+        }
+        if(req.query.authorId==undefined)
+        {
+            let token=jwt.verify(req.header['x-api-token'],'projectOne');
+            filter['authorId']=token._id;
         }
         if(req.query.tags!=undefined)
         {

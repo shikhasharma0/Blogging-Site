@@ -1,6 +1,7 @@
 const author = require("../models/authorModel");
 const Validators = require('../validators/validator');
-const validator = require('validator')
+const validator = require('validator');
+const jwt = require('jsonwebtoken');
 
 const createAuthor = async function(req,res) 
 {
@@ -53,20 +54,20 @@ const createAuthor = async function(req,res)
 const login = async function (req, res) {
     try {
         const requestBody = req.body;
-        if (!isValidRequestBody(requestBody)) {
+        if (!Validators.isValidRequestBody(requestBody)) {
             res.status(400).send({ status: false, message: 'Invalid request body. Please provide login details' })
             return
         }
         if (requestBody.email && requestBody.password) {
-            const check = await authorModel.findOne({ email: requestBody.email, password: requestBody.password });
-            if (!check) {
-                return res.status(400).send({ status: true, msg: "Invalid login credentials" })
+            const check = await author.findOne({ email: requestBody.email, password: requestBody.password });
+            if (check==null) {
+                return res.status(400).send({ status: false, msg: "Invalid login credentials" })
             }
             
             let payload = { _id: check._id }
             let token = jwt.sign(payload, 'projectOne')
             res.header('x-api-key', token);
-            res.status(200).send({ status: true, data: "Author login successfull", token: { token } })
+            res.status(200).send({ status: true, data: "Author login successfull", token: token})
         } else {
             res.status(400).send({ status: false, msg: "Must contain email and password" })
         }
