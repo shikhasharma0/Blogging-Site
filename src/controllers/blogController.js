@@ -32,8 +32,6 @@ const getBlogs = async function (req, res)
             for(let i=0;i<blogs.length;++i)
             {
                 delete blogs[i].deletedAt;
-                if(blogs[i].isPublished==false)
-                delete blogs[i].publishedAt;
             }
             res.status(200).send({ status: true, data: blogs });
         } 
@@ -103,8 +101,6 @@ const updateBlog = async function(req,res)
         if(blog!=null)
         {
             delete blog.deletedAt;
-            if(blog.isPublished==false)
-            delete blog.publishedAt;
             res.status(200).send({status : true,data : blog});
         }
         else
