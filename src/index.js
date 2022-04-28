@@ -16,7 +16,7 @@ mongoose.connect("mongodb+srv://Project-1-Group:CaBrSNjCFD2YQuqc@cluster0.w5bka.
 
 app.use(
     function (req,res,next){
-        console.log(moment().format('YYYY-MM-DD HH:mm:ss'),',',req.ip,',',req.path);
+        console.log(moment().format('YYYY-MM-DD HH:mm:ss'),',',req.ip,',',req.method,',',req.path);
         next();
     }
 );

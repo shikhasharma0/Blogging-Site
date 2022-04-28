@@ -1,15 +1,18 @@
 const jwt = require('jsonwebtoken');
+const authorModel = require('../models/authorModel');
 const blogModel = require("../models/blogModel");
 
 const authenticate = async function(req,res,next)
 {
     try 
     {
-        token = req.headers["x-api-key"]
-        if (!token) return res.status(400).send({status: false, msg: "Token must be persent in code"});
+        let token = req.headers["x-api-key"];
+        if (!token) return res.status(400).send({status: false, msg: "The Request is missing a mandatory header."});
         let decodedToken = jwt.verify(token,"projectOne");
-        if (!decodedToken) return res.status(401).send({status: false, msg: "invailed token"});
-        next()
+        if (!decodedToken) return res.status(401).send({status: false, msg: "Invalid token"});
+        let auth=await authorModel.findById(decodedToken._id);
+        if(auth!=null) next();
+        else return res.status(401).send({status : false,msg : "Author not logged in!"});
     } 
     catch(err)
     {
@@ -21,12 +24,12 @@ const authorise = async function(req,res,next)
 {
     try
     {
-        let blogId = req.params.blogid
+        let blogId = req.params.blogId
         let authorId = await blogModel.findOne({_id : blogId},{authorId : 1});
         let token = req.headers["x-api-key"]
         let decodedToken = jwt.verify(token, "projectOne")
-        if(authorId==decodedToken._id)
-            next()
+        if(authorId.authorId==decodedToken._id)
+            next();
         else
             res.status(403).send({status : false,msg : "Unauthorised Access!"});
     }

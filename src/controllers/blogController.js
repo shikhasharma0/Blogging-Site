@@ -1,6 +1,7 @@
 const Bloger = require('../models/blogModel');
 const Author = require('../models/authorModel');
-const Validators = require('../validators/validator')
+const Validators = require('../validators/validator');
+const jwt = require('jsonwebtoken');
 const moment = require('moment');
 
 const getBlogs = async function (req, res) 
@@ -21,9 +22,10 @@ const getBlogs = async function (req, res)
             let tags=JSON.parse(req.query.tags)
             filter['tags']=tags;
         }
-        if (req.query.subcategory!=undefined)
+        if (req.query.subCategory!=undefined)
         {
-            filter['subCategory']=req.query.subcategory;
+            let subCategory=JSON.parse(req.query.subCategory)
+            filter['subCategory']=subCategory;
         }
         filter['isDeleted']=false;
         filter['isPublished']=true;
@@ -79,7 +81,9 @@ const createBlogs = async function (req, res)
         return res.status(400).send({ status: false, message: "Author_Id not found" });
       }
 
-      requestBody.publishedAt = requestBody.isPublished ? moment().format('DD-MM-YYYY') : null;
+      if(requestBody.isPublished){
+      requestBody.publishedAt = moment().format('DD-MM-YYYY');
+      }
   
       let createdBlog = await Bloger.create(requestBody);
       res.status(201).send({ status: true, message: 'New blog created successfully', data: createdBlog });
@@ -94,10 +98,14 @@ const updateBlog = async function(req,res)
 {
     try
     {
+        let blog = await Bloger.findOne({_id : req.params.blogId,isDeleted : false});
         let data = req.body;
-        var arrData={};
-        data['isPublished']=true;
-        data['publishedAt']=moment().format('DD-MM-YYYY');
+        if(!blog.isPublished)
+        {
+            data['isPublished']=true;
+            data['publishedAt']=moment().format('DD-MM-YYYY');
+        }
+        let arrData={};
         if(data.tags!=undefined)
         {
             arrData = {tags : data.tags};
@@ -108,7 +116,7 @@ const updateBlog = async function(req,res)
             arrData = {tags : data.subCategory};
             delete data.subCategory;
         }
-        let blog = await Bloger.findOneAndUpdate({_id : req.params.blogId,isDeleted : false},{$set : data},{new : true});
+        blog = await Bloger.findOneAndUpdate({_id : req.params.blogId,isDeleted : false},{$set : data},{new : true});
         if(Object.keys(arrData).length!=0)
         {
             blog = await Bloger.findOneAndUpdate({_id : req.params.blogId,isDeleted : false},{$push : arrData},{new : true});
@@ -165,22 +173,24 @@ const deleteBlog = async function(req,res)
         }
         if(req.query.authorId!=undefined)
         {
-            let token=jwt.verify(req.header['x-api-token'],'projectOne');
-            if(token._id!=authorId)res.status(403).send({status : false,msg : 'Unauthorised Access!'});
+            let token=jwt.verify(req.headers['x-api-key'],'projectOne');
+            if(token._id!=req.query.authorId)res.status(403).send({status : false,msg : 'Unauthorised Access!'});
             filter['authorId']=req.query.authorId;
         }
         if(req.query.authorId==undefined)
         {
-            let token=jwt.verify(req.header['x-api-token'],'projectOne');
+            let token=jwt.verify(req.headers['x-api-key'],'projectOne');
             filter['authorId']=token._id;
         }
         if(req.query.tags!=undefined)
         {
-            filter['tags']=req.query.tags;
+            let tags=JSON.parse(req.query.tags)
+            filter['tags']=tags;
         }
         if (req.query.subCategory!=undefined)
         {
-            filter['subCategory']=req.query.subCategory;
+            let subCategory=JSON.parse(req.query.subCategory)
+            filter['subCategory']=subCategory;
         }
         if(req.query.unpublished!=undefined)
         {
