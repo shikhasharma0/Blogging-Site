@@ -3,7 +3,6 @@ const router = express.Router();
 const AuthorController = require("../controllers/authorController")
 const BlogController = require("../controllers/blogController")
 
-//Author-Blog route Handlers
 router.post("/author", AuthorController.createAuthor)
 router.post("/blogs", BlogController.createBlogs)
 router.get("/blogs", BlogController.getBlogs)

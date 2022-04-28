@@ -2,7 +2,6 @@ const Bloger = require('../models/blogModel');
 const Author = require('../models/authorModel');
 const Validators = require('../validators/validator')
 const moment = require('moment');
-const { all } = require('express/lib/application');
 
 const getBlogs = async function (req, res) 
 {
@@ -77,16 +76,11 @@ const createBlogs = async function (req, res)
         return res.status(400).send({ status: false, message: 'Blog category is required' })
       }
   
-    //   if (!(requestBody.authorId === requestBody.tokenId)) {
-    //     return res.status(400).send({ status: false, msg: "unauthorized access" })
-    //   }
-  
       let author = await Author.findOne({_id : requestBody.authorId});
       if (!author) {
         return res.status(400).send({ status: false, message: "Author_Id not found" });
       }
-  
-      //requestBody.isPublished = requestBody.isPublished ? requestBody.isPublished : false;
+
       requestBody.publishedAt = requestBody.isPublished ? moment().format('DD-MM-YYYY') : null;
   
       let createdBlog = await Bloger.create(requestBody);
