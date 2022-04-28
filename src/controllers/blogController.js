@@ -95,9 +95,24 @@ const updateBlog = async function(req,res)
     try
     {
         let data = req.body;
+        var arrData={};
         data['isPublished']=true;
         data['publishedAt']=moment().format('DD-MM-YYYY');
+        if(data.tags!=undefined)
+        {
+            arrData = {tags : data.tags};
+            delete data.tags;
+        }
+        if(data.subCategory!=undefined)
+        {
+            arrData = {tags : data.subCategory};
+            delete data.subCategory;
+        }
         let blog = await Bloger.findOneAndUpdate({_id : req.params.blogId,isDeleted : false},{$set : data},{new : true});
+        if(Object.keys(arrData).length!=0)
+        {
+            blog = await Bloger.findOneAndUpdate({_id : req.params.blogId,isDeleted : false},{$push : arrData},{new : true});
+        }
         if(blog!=null)
         {
             delete blog.deletedAt;
@@ -106,7 +121,7 @@ const updateBlog = async function(req,res)
         else
         {
             res.status(404).send({status : false,msg : "Blog doesn't exist!"});
-        } 
+        }
     }
     catch(err)
     {
