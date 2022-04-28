@@ -52,7 +52,7 @@ const createBlogs = async function (req, res)
       const requestBody = req.body;
   
       if (!Validators.isValidRequestBody(requestBody)) {
-        res.status(400).send({ status: false, message: 'Invalid request parameters. Please provide blog details' })
+        res.status(400).send({ status: false, message: 'Invalid request body. Please provide blog details' })
         return
       }
       if (!Validators.isValid(requestBody.title)) {

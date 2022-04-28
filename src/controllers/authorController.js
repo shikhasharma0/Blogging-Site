@@ -8,7 +8,7 @@ const createAuthor = async function(req,res)
     {
         let requestBody=req.body;
         if (!Validators.isValidRequestBody(requestBody)) {
-            res.status(400).send({ status: false, message: 'Invalid request parameters. Please provide author details' })
+            res.status(400).send({ status: false, message: 'Invalid request body. Please provide author details' })
             return
         }
 
@@ -36,7 +36,7 @@ const createAuthor = async function(req,res)
             return
         }
         if (!(validator.isEmail(requestBody.email))) {
-            res.status(400).send({ status: false, msg: 'enter valid email' })
+            res.status(400).send({ status: false, msg: 'Enter valid email' })
             return
         }
         let data = req.body
