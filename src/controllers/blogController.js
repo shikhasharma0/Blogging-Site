@@ -98,8 +98,12 @@ const updateBlog = async function(req,res)
 {
     try
     {
-        let blog = await Bloger.findOne({_id : req.params.blogId,isDeleted : false});
         let data = req.body;
+        if (!Validators.isValidRequestBody(requestBody)) {
+            res.status(400).send({ status: false, message: 'Invalid request body. Please provide blog details to be updated.' })
+            return
+        }
+        let blog = await Bloger.findOne({_id : req.params.blogId,isDeleted : false});
         if(!blog.isPublished)
         {
             data['isPublished']=true;
