@@ -64,8 +64,8 @@ const login = async function (req, res) {
                 return res.status(400).send({ status: false, msg: "Invalid login credentials!" })
             }
             
-            let payload = { _id: check._id }
-            let token = jwt.sign(payload, 'projectOne')
+            let payload = { _id: check._id };
+            let token = jwt.sign(payload, 'projectOne');
             res.header('x-api-key', token);
             res.status(200).send({ status: true, msg: "Login Successfull!", token: token})
         } else {
