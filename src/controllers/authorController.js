@@ -72,7 +72,7 @@ const login = async function (req, res) {
             res.status(400).send({ status: false, msg: "Must contain email and password." })
         }
     } catch (error) {
-        res.status(400).send({ status: false, error: error.message })
+        res.status(500).send({ status: false, error: error.message })
     }
 };
 

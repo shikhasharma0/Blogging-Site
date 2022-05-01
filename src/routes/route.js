@@ -4,7 +4,7 @@ const AuthorController = require("../controllers/authorController");
 const BlogController = require("../controllers/blogController");
 const middlewares = require('../middlewares/auth');
 
-router.post("/author",AuthorController.createAuthor);
+router.post("/authors",AuthorController.createAuthor);
 router.post("/login",AuthorController.login);
 router.post("/blogs",middlewares.authenticate,BlogController.createBlogs);
 router.get("/blogs",middlewares.authenticate,BlogController.getBlogs);
