@@ -103,7 +103,7 @@ const updateBlog = async function(req,res)
             res.status(400).send({status : false,msg : "Bad request! Please provide BlogID."});
         
         let data = req.body;
-        if (!Validators.isValidRequestBody(requestBody)) {
+        if (!Validators.isValidRequestBody(data)) {
             res.status(400).send({ status: false, message: 'Invalid request body. Please provide blog details to be updated.' })
             return
         }
@@ -124,6 +124,7 @@ const updateBlog = async function(req,res)
             arrData = {tags : data.subCategory};
             delete data.subCategory;
         }
+        console.log("updateblog128");
         blog = await Bloger.findOneAndUpdate({_id : req.params.blogId,isDeleted : false},{$set : data},{new : true});
         if(Object.keys(arrData).length!=0)
         {

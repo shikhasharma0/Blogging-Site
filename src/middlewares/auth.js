@@ -29,7 +29,9 @@ const authorise = async function(req,res,next)
         let token = req.headers["x-api-key"]
         let decodedToken = jwt.verify(token, "projectOne")
         if(authorId.authorId==decodedToken._id)
+        {
             next();
+        }
         else
             res.status(403).send({status : false,msg : "Unauthorised Access!"});
     }
