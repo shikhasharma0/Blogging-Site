@@ -4,49 +4,6 @@ const Validators = require('../validators/validator');
 const jwt = require('jsonwebtoken');
 const moment = require('moment');
 
-const getBlogs = async function (req, res) 
-{
-    try 
-    {
-        let filter={};
-        if(req.query.category!=undefined)
-        {
-            filter['category']=req.query.category;
-        }
-        if(req.query.authorId!=undefined)
-        {
-            filter['authorId']=req.query.authorId;
-        }
-        if(req.query.tags!=undefined)
-        {
-            let tags=JSON.parse(req.query.tags)
-            filter['tags']=tags;
-        }
-        if (req.query.subCategory!=undefined)
-        {
-            let subCategory=JSON.parse(req.query.subCategory)
-            filter['subCategory']=subCategory;
-        }
-        filter['isDeleted']=false;
-        filter['isPublished']=true;
-        let blogs=await Bloger.find(filter);
-        if (blogs.length!=0) {
-            for(let i=0;i<blogs.length;++i)
-            {
-                delete blogs[i].deletedAt;
-            }
-            res.status(200).send({ status: true, data: blogs });
-        } 
-        else {
-            res.status(404).send({ status: false, message: 'No blogs found!' })
-        }
-    } 
-    catch (error) 
-    {
-        res.status(400).send({ status: false, error: error.message });
-    }
-};
-
 const createBlogs = async function (req, res) 
 {
     try 
@@ -94,10 +51,57 @@ const createBlogs = async function (req, res)
     }
 };
 
+const getBlogs = async function (req, res) 
+{
+    try 
+    {
+        let filter={};
+        if(req.query.category!=undefined)
+        {
+            filter['category']=req.query.category;
+        }
+        if(req.query.authorId!=undefined)
+        {
+            filter['authorId']=req.query.authorId;
+        }
+        if(req.query.tags!=undefined)
+        {
+            let tags=JSON.parse(req.query.tags)
+            filter['tags']=tags;
+        }
+        if (req.query.subCategory!=undefined)
+        {
+            let subCategory=JSON.parse(req.query.subCategory)
+            filter['subCategory']=subCategory;
+        }
+        filter['isDeleted']=false;
+        filter['isPublished']=true;
+        let blogs=await Bloger.find(filter);
+        if (blogs.length!=0) {
+            for(let i=0;i<blogs.length;++i)
+            {
+                delete blogs[i].deletedAt;
+            }
+            res.status(200).send({ status: true, data: blogs });
+        } 
+        else {
+            res.status(404).send({ status: false, message: 'No blogs found!' })
+        }
+    } 
+    catch (error) 
+    {
+        res.status(400).send({ status: false, error: error.message });
+    }
+};
+
 const updateBlog = async function(req,res)
 {
     try
     {
+        if(req.params.blogId==undefined)
+        
+            res.status(400).send({status : false,msg : "Bad request! Please provide BlogID."});
+        
         let data = req.body;
         if (!Validators.isValidRequestBody(requestBody)) {
             res.status(400).send({ status: false, message: 'Invalid request body. Please provide blog details to be updated.' })
@@ -148,7 +152,7 @@ const deleteBlogById = async function(req,res)
     {
         if(req.params.blogId==undefined)
         
-            res.status(400).send({status : false,msg : "Bad request!"});
+            res.status(400).send({status : false,msg : "Bad request! Please provide BlogID."});
 
         let blog = await Bloger.findOneAndUpdate({_id : req.params.blogId,isDeleted : false},{isDeleted : true,deletedAt : moment().format('DD-MM-YYYY')});
         if(blog!=null)
