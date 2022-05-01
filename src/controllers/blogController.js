@@ -124,7 +124,6 @@ const updateBlog = async function(req,res)
             arrData = {tags : data.subCategory};
             delete data.subCategory;
         }
-        console.log("updateblog128");
         blog = await Bloger.findOneAndUpdate({_id : req.params.blogId,isDeleted : false},{$set : data},{new : true});
         if(Object.keys(arrData).length!=0)
         {
