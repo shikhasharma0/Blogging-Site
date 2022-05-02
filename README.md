@@ -1,6 +1,8 @@
 # Project1_Blog
 FunctionUp Project - 1 Uranium Batch Group 38 
 
+Team Members - Shikha Sharma, Surojit Piri, Abi Mangalan and Anurup Chakraborty.
+
 # ------------- FINAL CODE FOR THE PROJECT --------------
 
 
