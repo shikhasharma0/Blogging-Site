@@ -1,8 +1,6 @@
 # Project1_Blog
 FunctionUp Project - 1 Uranium Batch Group 38 
 
-# -------------- PHASE - 2 ---------------------
-
 # ------------- FINAL CODE FOR THE PROJECT --------------
 
 
