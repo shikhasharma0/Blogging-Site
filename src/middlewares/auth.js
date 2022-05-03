@@ -10,7 +10,8 @@ const authenticate = async function(req,res,next)
         if (!token) return res.status(400).send({status: false, msg: "The Request is missing a mandatory header."});
         let decodedToken = jwt.verify(token,"projectOne");
         if (!decodedToken) return res.status(401).send({status: false, msg: "Invalid token"});
-        let auth=await authorModel.findById(decodedToken._id);
+        req.authorId=decodedToken.authorId;
+        let auth=await authorModel.findById(decodedToken.authorId);
         if(auth!=null) next();
         else return res.status(401).send({status : false,msg : "Author not logged in!"});
     } 
@@ -26,9 +27,8 @@ const authorise = async function(req,res,next)
     {
         let blogId = req.params.blogId
         let authorId = await blogModel.findOne({_id : blogId},{authorId : 1});
-        let token = req.headers["x-api-key"]
-        let decodedToken = jwt.verify(token, "projectOne")
-        if(authorId.authorId==decodedToken._id)
+        let authorIdFromToken = req.authorId;
+        if(authorIdFromToken==authorId)
         {
             next();
         }

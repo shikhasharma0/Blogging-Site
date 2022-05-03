@@ -1,4 +1,6 @@
-const isValid = function (value) 
+const mongoose = require("mongoose");
+
+const isValidField = function (value) 
 {
     if (typeof value === 'undefined' || value === null) return false;
 
@@ -12,4 +14,20 @@ const isValidRequestBody = function (requestBody)
    return Object.keys(requestBody).length > 0;
 };
 
-module.exports={isValid,isValidRequestBody};
+const isValidObjectId = function (authorId)
+{
+    if (!mongoose.Types.ObjectId.isValid(authorId))return false
+    
+    return true;
+};
+
+const isValidTitle = function (title)
+{
+    return ["Mr","Mrs","Miss"].indexOf(title)!=-1;
+};
+
+const isValidEmail = function(email)
+{
+    return (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email));
+};
+module.exports={isValidField,isValidRequestBody,isValidObjectId,isValidEmail,isValidTitle};
