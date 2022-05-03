@@ -14,14 +14,14 @@ const blogSchema = new mongoose.Schema(
                 },
         authorId :  { 
                         type: objectId,
-                        ref: "authors"
+                        ref: "author"
                     },
         tags : [String],
         category :  {
                         type: String,
                         required: true
                     },
-        subCategory : [String],
+        subcategory : [String],
         isPublished :  {
                            type: Boolean,
                            default: false
@@ -41,4 +41,4 @@ const blogSchema = new mongoose.Schema(
     },{ timestamps: true }
 );
 
-module.exports = mongoose.model("blogs", blogSchema,"blogCollection");
+module.exports = mongoose.model("blog", blogSchema);

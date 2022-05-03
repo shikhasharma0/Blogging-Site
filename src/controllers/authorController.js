@@ -40,14 +40,14 @@ const createAuthor = async function(req,res)
         
             return res.status(400).send({ status: false, msg: 'Enter a valid E-Mail.' });
         
-        let emailIsAlreadyInUse = await authorModel.find({email : requestBody.email});
+        let emailIsAlreadyInUse = await authorModel.findOne({email : requestBody.email});
         if(emailIsAlreadyInUse)
-
-            return res.status(400).send({ status: false, msg: 'E-Mail has already been registered.' });
-        
-        let data = req.body
-        let created = await authorModel.create(data)
-        res.status(201).send({status: true, data: created})
+    
+                return res.status(400).send({ status: false, msg: 'E-Mail has already been registered.' });
+            
+        let data = req.body;
+        let created = await authorModel.create(data);
+        res.status(201).send({status: true, data: created});
     }
     catch(err)
     {

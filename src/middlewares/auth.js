@@ -26,9 +26,8 @@ const authorise = async function(req,res,next)
     try
     {
         let blogId = req.params.blogId
-        let authorId = await blogModel.findOne({_id : blogId},{authorId : 1});
-        let authorIdFromToken = req.authorId;
-        if(authorIdFromToken==authorId)
+        let blog = await blogModel.findOne({_id : blogId},{authorId : 1});
+        if(req.authorId==blog.authorId)
         {
             next();
         }

@@ -68,10 +68,10 @@ const getBlogs = async function (req, res)
             let tags=JSON.parse(req.query.tags)
                 filter['tags']={$in : tags};
         }
-        if (req.query.subCategory!=undefined)
+        if (req.query.subcategory!=undefined)
         {
-            let subCategory=JSON.parse(req.query.subCategory)
-            filter['subCategory']={$in : subCategory};
+            let subcategory=JSON.parse(req.query.subcategory)
+            filter['subcategory']={$in : subcategory};
         }
         let blogs=await blogModel.find(filter);
         if (blogs.length!=0) 
@@ -118,10 +118,10 @@ const updateBlog = async function(req,res)
             arrData = {tags : data.tags};
             delete data.tags;
         }
-        if(data.subCategory!=undefined)
+        if(data.subcategory!=undefined)
         {
-            arrData = {subCategory : data.subCategory};
-            delete data.subCategory;
+            arrData['subcategory'] = data.subcategory;
+            delete data.subcategory;
         }
         blog = await blogModel.findOneAndUpdate({_id : req.params.blogId,isDeleted : false},{$set : data},{new : true});
         if(Object.keys(arrData).length!=0)
@@ -139,6 +139,7 @@ const updateBlog = async function(req,res)
     }
     catch(err)
     {
+        console.log(err);
         res.status(500).send({status : false,msg : err.message});
     }
 };
@@ -192,12 +193,12 @@ const deleteBlog = async function(req,res)
         if(req.query.tags!=undefined)
         {
             let tags=JSON.parse(req.query.tags)
-            filter['tags']=tags;
+            filter['tags']={$in : tags};
         }
-        if (req.query.subCategory!=undefined)
+        if (req.query.subcategory!=undefined)
         {
-            let subCategory=JSON.parse(req.query.subCategory)
-            filter['subCategory']=subCategory;
+            let subcategory=JSON.parse(req.query.subcategory)
+            filter['subcategory']={$in : subcategory};
         }
         if(req.query.unpublished!=undefined)
         {
