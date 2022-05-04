@@ -41,7 +41,7 @@ const createBlogs = async function (req, res)
       
         requestBody.publishedAt = new Date();
       
-      let newBlog = await blogModel.create(requestBody);
+       let newBlog = await blogModel.create(requestBody);
       res.status(201).send({ status: true, message: 'New blog created successfully.', data: newBlog });
     } 
     catch(error) 
